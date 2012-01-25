@@ -20,12 +20,29 @@
 "
 " Author: Christian Hammerl <info@christian-hammerl.de>
 "
-function!dirsettings#init(event, ...)
-	let fname = a:0 > 0 ? a:1 : '.vimdir'
-	let augroup = a:0 > 1 ? a:2 : 'dirsettings'
-	execute 'autocmd! ' . augroup
-    call dirsettings#load(fname)
-	execute 'doautocmd ' . a:event . ' *'
+
+let s:dirsettings_performing_autocommand = 0
+
+function! dirsettings#install(...)
+	let s:fname = a:0 > 0 ? a:1 : '.vimdir'
+	let s:augroup = a:0 > 1 ? a:2 : 'dirsettings'
+
+	execute 'augroup ' . s:augroup
+		au BufNewFile * call dirsettings#init('BufNewFile', s:fname)
+		au BufEnter * call dirsettings#init('BufEnter', s:fname)
+	augroup END
+endfunction
+
+function! dirsettings#init(event, fname)
+	try
+		if (s:dirsettings_performing_autocommand == 0)
+			let s:dirsettings_performing_autocommand = 1
+			call dirsettings#load(a:fname)
+			execute 'doautocmd ' . a:event . ' <buffer>'
+		endif
+	finally
+		let s:dirsettings_performing_autocommand = 0
+	endtry
 endfunction
 
 function! dirsettings#load(fname, ...)
