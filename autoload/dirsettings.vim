@@ -21,40 +21,42 @@
 " Author: Christian Hammerl <info@christian-hammerl.de>
 "
 
-let s:dirsettings_performing_autocommand = 0
+if (exists('g:dirsettings_loaded'))
+	finish
+endif
+let g:dirsettings_loaded = 1
 
-function! dirsettings#install(...)
-	let s:fname = a:0 > 0 ? a:1 : '.vimdir'
-	let s:augroup = a:0 > 1 ? a:2 : 'dirsettings'
+function dirsettings#install(...)
+	let l:fname = a:0 > 0 ? a:1 : '.vimdir'
+	let l:augroup = a:0 > 1 ? a:2 : 'dirsettings'
 
-	execute 'augroup ' . s:augroup
-		au BufNewFile * call dirsettings#init('BufNewFile', s:fname)
-		au BufEnter * call dirsettings#init('BufEnter', s:fname)
+	execute 'augroup ' . l:augroup
+		au!
+		execute 'au BufNewFile * : call s:prepareBuffer(''BufNewFile'', ''' . l:fname . ''')'
+		execute 'au BufEnter * : call s:prepareBuffer(''BufEnter'', ''' . l:fname . ''')'
 	augroup END
 endfunction
 
-function! dirsettings#init(event, fname)
-	try
-		if (s:dirsettings_performing_autocommand == 0)
-			let s:dirsettings_performing_autocommand = 1
-			call dirsettings#load(a:fname)
-			execute 'doautocmd ' . a:event . ' <buffer>'
-		endif
-	finally
-		let s:dirsettings_performing_autocommand = 0
-	endtry
+function s:prepareBuffer(event, fname)
+	if (exists('b:dirsettings_prepared'))
+		return
+	endif
+
+	let b:dirsettings_prepared = 1
+	call s:loadDirectorySettings(a:fname)
+	execute 'doautocmd ' . a:event . ' <buffer>'
 endfunction
 
-function! dirsettings#load(fname, ...)
-	let here = a:0 > 0 ? a:1 : expand("%:p:h")
-	if (strlen(here) > 0)
-		let fr = match(here, "/[^/]*$")
+function s:loadDirectorySettings(fname, ...)
+	let l:here = a:0 > 0 ? a:1 : expand('%:p:h')
+	if (strlen(l:here) > 0)
+		let fr = match(l:here, '/[^/]*$')
 		if (fr > -1)
-			call dirsettings#load(a:fname, strpart(here, 0, fr))
+			call s:loadDirectorySettings(a:fname, strpart(l:here, 0, fr))
 		endif
 	endif
-	if (filereadable(here . "/" . a:fname))
-		exec 'source ' . here . "/" . a:fname
+	if (filereadable(l:here . '/' . a:fname))
+		exec 'source ' . l:here . '/' . a:fname
 	endif
 endfunction
 
