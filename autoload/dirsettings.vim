@@ -19,6 +19,7 @@
 "   See readme.rst for details.
 "
 " Author: Christian Hammerl <info@christian-hammerl.de>
+" Author: Jakob Westhoff <jakob@qafoo.com>
 "
 
 if (exists('g:dirsettings_loaded'))
@@ -27,36 +28,51 @@ endif
 let g:dirsettings_loaded = 1
 
 function dirsettings#install(...)
-	let l:fname = a:0 > 0 ? a:1 : '.vimdir'
-	let l:augroup = a:0 > 1 ? a:2 : 'dirsettings'
+	let l:fname = a:0 > 0 ? a:1 : '.vimrc'
+	let l:dname = a:0 > 1 ? a:2 : '.vim'
+	let l:augroup = a:0 > 2 ? a:3 : 'dirsettings'
 
 	execute 'augroup ' . l:augroup
 		au!
-		execute 'au BufNewFile * : call s:prepareBuffer(''BufNewFile'', ''' . l:fname . ''')'
-		execute 'au BufEnter * : call s:prepareBuffer(''BufEnter'', ''' . l:fname . ''')'
+		execute 'au BufNewFile * : call s:prepareBuffer(''BufNewFile'', ''' . l:fname . ''', ''' . l:dname . ''')'
+		execute 'au BufEnter * : call s:prepareBuffer(''BufEnter'', ''' . l:fname . ''', ''' . l:dname . ''')'
 	augroup END
 endfunction
 
-function s:prepareBuffer(event, fname)
+function s:prepareBuffer(event, fname, dname)
 	if (exists('b:dirsettings_prepared'))
 		return
 	endif
 
 	let b:dirsettings_prepared = 1
-	call s:loadDirectorySettings(a:fname)
+	call s:loadDirectorySettings(a:fname, a:dname)
 	execute 'doautocmd ' . a:event . ' <buffer>'
 endfunction
 
-function s:loadDirectorySettings(fname, ...)
+function s:loadDirectorySettings(fname, dname, ...)
 	let l:here = a:0 > 0 ? a:1 : expand('%:p:h')
-	if (strlen(l:here) > 0)
-		let fr = match(l:here, '/[^/]*$')
-		if (fr > -1)
-			call s:loadDirectorySettings(a:fname, strpart(l:here, 0, fr))
-		endif
-	endif
-	if (filereadable(l:here . '/' . a:fname))
-		exec 'source ' . l:here . '/' . a:fname
-	endif
+    echo "l:here = " . l:here
+
+    let l:lastSegmentStart = match(l:here, '/[^/]\+$')
+    echo "l:lastSegmentStart = " . l:lastSegmentStart
+
+    let l:isHomeDirectory = (stridx(l:here, $HOME) == 0 && strlen(l:here) == strlen($HOME)) ? 1 : 0
+    echo "l:isHomeDirectory = " . l:isHomeDirectory
+
+    if (l:lastSegmentStart > -1 && !l:isHomeDirectory)
+        call s:loadDirectorySettings(a:fname, a:dname, strpart(l:here, 0, l:lastSegmentStart))
+        call s:applyLocalConfiguration(a:fname, a:dname, l:here)
+    endif
 endfunction
 
+function s:applyLocalConfiguration(fname, dname, path)
+	let l:fullfname = a:path . '/' . a:fname
+	let l:fulldname = a:path . '/' . a:dname
+
+	if (isdirectory(l:fulldname))
+		set runtimepath+=l:fulldname
+	endif
+	if (filereadable(l:fullfname))
+		exec 'source ' . l:fullfname
+	endif
+endfunction
