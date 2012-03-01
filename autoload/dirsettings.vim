@@ -12,9 +12,11 @@
 "   http://www.vim.org/scripts/script.php?script_id=1860
 "
 "   But this plugin goes a little step further. It walks the whole directory
-"   tree up to the root and on its way back it sources each ".vimdir" file it
-"   founds. This allows to overwrite specific settings even in subdirectories
-"   which inherit the settings of each parent directory.
+"   tree up to the root and on its way back it sources each ".vimrc" file it
+"   found. This allows to overwrite specific settings even in subdirectories
+"   which inherit the settings of each parent directory. Furthermore a if
+"   a .vim folder is found in one of the parent directories it is added to the
+"   runtime path and therefore treated as the .vim folder inside the home dir.
 "
 "   See readme.rst for details.
 "
