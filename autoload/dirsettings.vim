@@ -27,41 +27,41 @@ if (exists('g:dirsettings_loaded'))
 endif
 let g:dirsettings_loaded = 1
 
-function dirsettings#install(...)
+function dirsettings#Install(...)
 	let l:fname = a:0 > 0 ? a:1 : '.vimrc'
 	let l:dname = a:0 > 1 ? a:2 : '.vim'
 	let l:augroup = a:0 > 2 ? a:3 : 'dirsettings'
 
 	execute 'augroup ' . l:augroup
 		au!
-		execute 'au BufNewFile * : call s:prepareBuffer(''BufNewFile'', ''' . l:fname . ''', ''' . l:dname . ''')'
-		execute 'au BufEnter * : call s:prepareBuffer(''BufEnter'', ''' . l:fname . ''', ''' . l:dname . ''')'
+		execute 'au BufNewFile * : call s:PrepareBuffer(''BufNewFile'', ''' . l:fname . ''', ''' . l:dname . ''')'
+		execute 'au BufEnter * : call s:PrepareBuffer(''BufEnter'', ''' . l:fname . ''', ''' . l:dname . ''')'
 	augroup END
 endfunction
 
-function s:prepareBuffer(event, fname, dname)
+function s:PrepareBuffer(event, fname, dname)
 	if (exists('b:dirsettings_prepared'))
 		return
 	endif
 
 	let b:dirsettings_prepared = 1
-	call s:loadDirectorySettings(a:fname, a:dname)
+	call s:LoadDirectorySettings(a:fname, a:dname)
 	execute 'doautocmd ' . a:event . ' <buffer>'
 endfunction
 
-function s:loadDirectorySettings(fname, dname, ...)
+function s:LoadDirectorySettings(fname, dname, ...)
 	let l:here = a:0 > 0 ? a:1 : expand('%:p:h')
 
     let l:lastSegmentStart = match(l:here, '/[^/]\+$')
     let l:isHomeDirectory = (stridx(l:here, $HOME) == 0 && strlen(l:here) == strlen($HOME)) ? 1 : 0
 
     if (l:lastSegmentStart > -1 && !l:isHomeDirectory)
-        call s:loadDirectorySettings(a:fname, a:dname, strpart(l:here, 0, l:lastSegmentStart))
-        call s:applyLocalConfiguration(a:fname, a:dname, l:here)
+        call s:LoadDirectorySettings(a:fname, a:dname, strpart(l:here, 0, l:lastSegmentStart))
+        call s:ApplyLocalConfiguration(a:fname, a:dname, l:here)
     endif
 endfunction
 
-function s:applyLocalConfiguration(fname, dname, path)
+function s:ApplyLocalConfiguration(fname, dname, path)
 	let l:fullfname = a:path . '/' . a:fname
 	let l:fulldname = a:path . '/' . a:dname
 
