@@ -1,0 +1,3 @@
+[submodule "tests/runVimTests"]
+	path = tests/runVimTests
+	url = https://github.com/vim-scripts/runVimTests.git
