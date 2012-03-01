@@ -51,13 +51,9 @@ endfunction
 
 function s:loadDirectorySettings(fname, dname, ...)
 	let l:here = a:0 > 0 ? a:1 : expand('%:p:h')
-    echo "l:here = " . l:here
 
     let l:lastSegmentStart = match(l:here, '/[^/]\+$')
-    echo "l:lastSegmentStart = " . l:lastSegmentStart
-
     let l:isHomeDirectory = (stridx(l:here, $HOME) == 0 && strlen(l:here) == strlen($HOME)) ? 1 : 0
-    echo "l:isHomeDirectory = " . l:isHomeDirectory
 
     if (l:lastSegmentStart > -1 && !l:isHomeDirectory)
         call s:loadDirectorySettings(a:fname, a:dname, strpart(l:here, 0, l:lastSegmentStart))
