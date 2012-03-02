@@ -1,5 +1,3 @@
-source _setup.vim
-
 edit ../data/file-only/level1/level2/empty
 
 echo g:dirsettingsLevel1
