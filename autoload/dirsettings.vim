@@ -68,7 +68,7 @@ function s:ApplyLocalConfiguration(fname, dname, path)
 	let l:fulldname = a:path . '/' . a:dname
 
 	if (isdirectory(l:fulldname))
-		set runtimepath+=l:fulldname
+		execute "set runtimepath+=" . l:fulldname
 	endif
 	if (filereadable(l:fullfname))
 		exec 'source ' . l:fullfname
