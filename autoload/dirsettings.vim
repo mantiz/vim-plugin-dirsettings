@@ -12,10 +12,10 @@
 "   http://www.vim.org/scripts/script.php?script_id=1860
 "
 "   But this plugin goes a little step further. It walks the whole directory
-"   tree up to the root and on its way back it sources each ".vimrc" file it
-"   found. This allows to overwrite specific settings even in subdirectories
-"   which inherit the settings of each parent directory. Furthermore a if
-"   a .vim folder is found in one of the parent directories it is added to the
+"   tree up to the root and on its way back it sources each found ".vimrc".
+"   This allows to overwrite specific settings even in subdirectories which
+"   inherit the settings of each parent directory. Furthermore if a .vim
+"   folder is found in one of the parent directories it is added to the
 "   runtime path and therefore treated as the .vim folder inside the home dir.
 "
 "   See readme.rst for details.
@@ -33,34 +33,39 @@ function dirsettings#Install(...)
 	let l:fname = a:0 > 0 ? a:1 : '.vimrc'
 	let l:dname = a:0 > 1 ? a:2 : '.vim'
 	let l:augroup = a:0 > 2 ? a:3 : 'dirsettings'
+	let l:rootpath = a:0 > 3 ? a:4 : ''
 
 	execute 'augroup ' . l:augroup
 		au!
-		execute 'au BufNewFile * : call s:PrepareBuffer(''BufNewFile'', ''' . l:fname . ''', ''' . l:dname . ''')'
-		execute 'au BufEnter * : call s:PrepareBuffer(''BufEnter'', ''' . l:fname . ''', ''' . l:dname . ''')'
+		execute 'au BufNewFile * : call s:PrepareBuffer(''BufNewFile'', ''' . l:fname . ''', ''' . l:dname . ''', ''' . l:rootpath . ''')'
+		execute 'au BufEnter * : call s:PrepareBuffer(''BufEnter'', ''' . l:fname . ''', ''' . l:dname . ''', ''' . l:rootpath . ''')'
 	augroup END
 endfunction
 
-function s:PrepareBuffer(event, fname, dname)
+function s:PrepareBuffer(event, fname, dname, rootpath)
 	if (exists('b:dirsettings_prepared'))
 		return
 	endif
 
 	let b:dirsettings_prepared = 1
-	call s:LoadDirectorySettings(a:fname, a:dname)
+
+	call s:LoadDirectorySettings(a:fname, a:dname, a:rootpath, substitute($HOME, '/\+$', '', ''))
 	execute 'doautocmd ' . a:event . ' <buffer>'
 endfunction
 
-function s:LoadDirectorySettings(fname, dname, ...)
-	let l:here = a:0 > 0 ? a:1 : expand('%:p:h')
+function s:LoadDirectorySettings(fname, dname, rootpath, home, ...)
+	let l:here = substitute(a:0 > 0 ? a:1 : expand('%:p:h'), '/\+$', '', '')
 
-    let l:lastSegmentStart = match(l:here, '/[^/]\+$')
-    let l:isHomeDirectory = (stridx(l:here, $HOME) == 0 && strlen(l:here) == strlen($HOME)) ? 1 : 0
+	let l:lastSegmentStart = match(l:here, '/[^/]\+$')
+	let l:isHomeDirectory = (stridx(l:here, a:home) == 0 && strlen(l:here) == strlen(a:home)) ? 1 : 0
 
-    if (l:lastSegmentStart > -1 && !l:isHomeDirectory)
-        call s:LoadDirectorySettings(a:fname, a:dname, strpart(l:here, 0, l:lastSegmentStart))
-        call s:ApplyLocalConfiguration(a:fname, a:dname, l:here)
-    endif
+	if (l:lastSegmentStart > -1 && l:here != a:rootpath)
+		call s:LoadDirectorySettings(a:fname, a:dname, a:rootpath, a:home, strpart(l:here, 0, l:lastSegmentStart))
+	endif
+
+	if (!l:isHomeDirectory)
+		call s:ApplyLocalConfiguration(a:fname, a:dname, l:here)
+	endif
 endfunction
 
 function s:ApplyLocalConfiguration(fname, dname, path)
@@ -68,9 +73,10 @@ function s:ApplyLocalConfiguration(fname, dname, path)
 	let l:fulldname = a:path . '/' . a:dname
 
 	if (isdirectory(l:fulldname))
-		set runtimepath+=l:fulldname
+		execute "set runtimepath+=" . l:fulldname
 	endif
 	if (filereadable(l:fullfname))
 		exec 'source ' . l:fullfname
 	endif
 endfunction
+
