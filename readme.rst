@@ -6,6 +6,23 @@ VIM - Plugin - dirsettings
 :Version: 1.0
 :Updated: 2012-01-24
 
+===========
+Description
+===========
+
+This is a simple plugin that allows per directory settings for your favourite
+editor VIM. This plugin is mainly inspired by the already existing plugin named
+dirsettings, see:
+
+http://www.vim.org/scripts/script.php?script_id=1860
+
+But this plugin goes a little step further. It walks the whole directory tree
+up to the root and on its way back it sources each found ".vimrc".  This allows
+to overwrite specific settings even in subdirectories which inherit the
+settings of each parent directory. Furthermore if a .vim folder is found in one
+of the parent directories it is added to the runtime path and therefore treated
+as the .vim folder inside the home dir.
+
 ==================
 Installation guide
 ==================
@@ -40,18 +57,4 @@ another event) and calls all other defined autocommands. This is because this
 has to be included at the very first in your ``.vimrc``. These autocommands
 should be the very first which get executed, otherwise it could happen that
 previously defined autocommands are called twice.
-
-===========
-``.vimdir``
-===========
-
-This file can be used to customize your vim settings on a directory level.
-
-To make a bundle available to pathogen for a specific directory just add the
-directory of the bundle to your runtimepath::
-
-    set runtimepath+=<path-to-your-bundle>
-
-Because this way the runtimepath is modified before ``pathogen#infect`` is
-called, pathogen properly loads the bundle for this directory.
 
