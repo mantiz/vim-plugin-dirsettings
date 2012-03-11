@@ -18,6 +18,10 @@
 "   folder is found in one of the parent directories it is added to the
 "   runtime path and therefore treated as the .vim folder inside the home dir.
 "
+"   Additionally it checks for a ".vim/tags" file and appends it to the tag
+"   list. This is better than a "tags" file in the current working directory
+"   for source control reasons.
+"
 "   See readme.rst for details.
 "
 " Author: Christian Hammerl <info@christian-hammerl.de>
@@ -49,28 +53,29 @@ function s:PrepareBuffer(event, fname, dname, rootpath)
 
 	let b:dirsettings_prepared = 1
 
-	call s:LoadDirectorySettings(a:fname, a:dname, a:rootpath, substitute($HOME, '/\+$', '', ''))
+	call s:LoadDirectorySettings(function('s:ApplyLocalConfiguration'), a:fname, a:dname, a:rootpath, substitute($HOME, '/\+$', '', ''))
 	execute 'doautocmd ' . a:event . ' <buffer>'
 endfunction
 
-function s:LoadDirectorySettings(fname, dname, rootpath, home, ...)
+function s:LoadDirectorySettings(callback, fname, dname, rootpath, home, ...)
 	let l:here = substitute(a:0 > 0 ? a:1 : expand('%:p:h'), '/\+$', '', '')
 
 	let l:lastSegmentStart = match(l:here, '/[^/]\+$')
 	let l:isHomeDirectory = (stridx(l:here, a:home) == 0 && strlen(l:here) == strlen(a:home)) ? 1 : 0
 
 	if (l:lastSegmentStart > -1 && l:here != a:rootpath)
-		call s:LoadDirectorySettings(a:fname, a:dname, a:rootpath, a:home, strpart(l:here, 0, l:lastSegmentStart))
+		call s:LoadDirectorySettings(a:callback, a:fname, a:dname, a:rootpath, a:home, strpart(l:here, 0, l:lastSegmentStart))
 	endif
 
 	if (!l:isHomeDirectory)
-		call s:ApplyLocalConfiguration(a:fname, a:dname, l:here)
+		call a:callback(a:fname, a:dname, l:here)
 	endif
 endfunction
 
 function s:ApplyLocalConfiguration(fname, dname, path)
 	let l:fullfname = a:path . '/' . a:fname
 	let l:fulldname = a:path . '/' . a:dname
+	let l:fulltagname = a:path . '/' . a:dname . '/tags'
 
 	if (isdirectory(l:fulldname))
 		execute "set runtimepath+=" . l:fulldname
@@ -78,5 +83,8 @@ function s:ApplyLocalConfiguration(fname, dname, path)
 	if (filereadable(l:fullfname))
 		exec 'source ' . l:fullfname
 	endif
+	if (filereadable(l:fulltagname))
+		exec 'set tags +=  ' . l:fulltagname
+	endif 
 endfunction
 

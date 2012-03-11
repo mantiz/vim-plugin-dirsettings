@@ -23,6 +23,10 @@ settings of each parent directory. Furthermore if a .vim folder is found in one
 of the parent directories it is added to the runtime path and therefore treated
 as the .vim folder inside the home dir.
 
+Additionally it checks for a ".vim/tags" file and appends it to the tag
+list. This is better than a "tags" file in the current working directory
+for source control reasons.
+
 ==================
 Installation guide
 ==================
