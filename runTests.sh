@@ -17,4 +17,8 @@ if [ -z "${TESTDEBUG}" ]; then
     rm ${testdir}/src/*.{msgout,out,msgresult} >/dev/null 2>&1
 fi
 
+if [ -f "${fakehome}/.viminfo" ]; then
+	rm "${fakehome}/.viminfo"
+fi
+
 export HOME="${oldhome}"
