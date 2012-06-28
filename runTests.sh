@@ -7,7 +7,7 @@ oldhome="$HOME"
 
 export HOME="${fakehome}"
 
-if [ $# -gt 1 ]; then
+if [ $# -ge 1 ]; then
     env bash ${testdir}/runVimTests/bin/runVimTests.sh "$@"
 else
     env bash ${testdir}/runVimTests/bin/runVimTests.sh "${testdir}/src"
