@@ -37,8 +37,8 @@ function dirsettings#Install(...)
 
 	execute 'augroup ' . l:augroup
 		au!
-		execute 'au BufNewFile * : call s:PrepareBuffer(''BufNewFile'', ''' . l:fname . ''', ''' . l:dname . ''', ''' . l:rootpath . ''')'
 		execute 'au BufReadPre * : call s:PrepareBuffer(''BufReadPre'', ''' . l:fname . ''', ''' . l:dname . ''', ''' . l:rootpath . ''')'
+		execute 'au BufWinEnter * : call s:PrepareBuffer(''BufWinEnter'', ''' . l:fname . ''', ''' . l:dname . ''', ''' . l:rootpath . ''')'
 	augroup END
 endfunction
 
