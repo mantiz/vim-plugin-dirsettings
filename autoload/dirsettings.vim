@@ -59,7 +59,7 @@ function s:LoadDirectorySettings(fname, dname, rootpath, home, ...)
 	let l:lastSegmentStart = match(l:here, '/[^/]\+$')
 	let l:isHomeDirectory = (stridx(l:here, a:home) == 0 && strlen(l:here) == strlen(a:home)) ? 1 : 0
 
-	if (l:lastSegmentStart > -1 && l:here != a:rootpath)
+	if (stridx(l:here, a:rootpath) == 0 && strlen(l:here) > strlen(a:rootpath))
 		call s:LoadDirectorySettings(a:fname, a:dname, a:rootpath, a:home, strpart(l:here, 0, l:lastSegmentStart))
 	endif
 
