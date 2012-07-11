@@ -88,7 +88,7 @@ Credits
 
 Thanks to `Jakob Westhoff`_ for adding support for .vim folders.
 
-Thanks to `Jakob Westhoff`_ and `Tobias Schlitt`_ for adding tests some tests.
+Thanks to `Jakob Westhoff`_ and `Tobias Schlitt`_ for adding some tests.
 
 .. _`Jakob Westhoff`: https://github.com/jakobwesthoff/
 .. _`Tobias Schlitt`: https://github.com/tobys/
