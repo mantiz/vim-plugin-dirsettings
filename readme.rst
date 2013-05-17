@@ -1,4 +1,3 @@
-
 ==========================
 VIM - Plugin - dirsettings
 ==========================
@@ -29,7 +28,7 @@ used function to load directory specific settings, and sets a flag for the own
 autocommands so that they are not executed twice which would result in an
 endless recursion. After the flag was set, the current event is recalled which
 executes all other defined autocommands. This explains why the call to
-``dirsettings#install()`` should be the very first command in your ``.vimrc``.
+``dirsettings#Install()`` should be the very first command in your ``.vimrc``.
 Otherwise it could happen that previously defined autocommands are called
 twice.
 
@@ -58,7 +57,7 @@ with every other bundle manager or even without one.
    able to modify the runtimepath before pathogen is invoked, it is important
    that this statement is executed before ``pathogen#infect`` is executed)::
 
-    call dirsettings#install()
+    call dirsettings#Install()
 
 Tips and tricks
 ===============
