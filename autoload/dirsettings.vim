@@ -18,6 +18,10 @@
 "   folder is found in one of the parent directories it is added to the
 "   runtime path and therefore treated as the .vim folder inside the home dir.
 "
+"   Additionally it checks for a ".vim/tags" file and appends it to the tag
+"   list. This is better than a "tags" file in the current working directory
+"   for source control reasons.
+"
 "   See readme.rst for details.
 "
 " Author: Christian Hammerl <info@christian-hammerl.de>
@@ -72,12 +76,16 @@ endfunction
 function s:ApplyLocalConfiguration(fname, dname, path)
 	let l:fullfname = a:path . '/' . a:fname
 	let l:fulldname = a:path . '/' . a:dname
+	let l:fulltagname = a:path . '/' . a:dname . '/tags'
 
 	if (isdirectory(l:fulldname))
 		execute "set runtimepath+=" . l:fulldname
 	endif
 	if (filereadable(l:fullfname))
 		exec 'source ' . l:fullfname
+	endif
+	if (filereadable(l:fulltagname))
+		exec 'set tags +=' . l:fulltagname
 	endif
 endfunction
 

@@ -22,6 +22,10 @@ settings of each parent directory. Furthermore if a .vim folder is found in one
 of the parent directories it is added to the runtime path and therefore treated
 as the .vim folder inside the home dir.
 
+Additionally it checks for a ".vim/tags" file and appends it to the tag
+list. This is better than a "tags" file in the current working directory
+for source control reasons.
+
 The plugin uses three autocommands (``BufNewFile, BufReadPre, BufWinEnter``)
 with the autocommand group `dirsettings` (by default). It calls an internally
 used function to load directory specific settings, and sets a flag for the own
