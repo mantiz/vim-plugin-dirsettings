@@ -1,2 +1,1 @@
-let g:dirsettingsOverwriteTestFtPlugin="level2"
-let g:dirsettingsLevel2FtPlugin="level2 loaded"
+echo "Sourced ftplugin directory-only/level1/level2/.vim/ftplugin/php/some.vim"

@@ -1,7 +1,7 @@
 "
 " Plugin: dirsettings
 "
-" Version: 1.0
+" Version: 2.0
 "
 " Description:
 "
@@ -43,6 +43,7 @@ function dirsettings#Install(...)
 		au!
 		execute 'au BufNewFile * : call s:PrepareBuffer(''BufNewFile'', ''' . l:fname . ''', ''' . l:dname . ''', ''' . l:rootpath . ''')'
 		execute 'au BufReadPre * : call s:PrepareBuffer(''BufReadPre'', ''' . l:fname . ''', ''' . l:dname . ''', ''' . l:rootpath . ''')'
+		execute 'au BufWinEnter * : call s:PrepareBuffer(''BufWinEnter'', ''' . l:fname . ''', ''' . l:dname . ''', ''' . l:rootpath . ''')'
 	augroup END
 endfunction
 
@@ -63,8 +64,8 @@ function s:LoadDirectorySettings(callback, fname, dname, rootpath, home, ...)
 	let l:lastSegmentStart = match(l:here, '/[^/]\+$')
 	let l:isHomeDirectory = (stridx(l:here, a:home) == 0 && strlen(l:here) == strlen(a:home)) ? 1 : 0
 
-	if (l:lastSegmentStart > -1 && l:here != a:rootpath)
-		call s:LoadDirectorySettings(a:callback, a:fname, a:dname, a:rootpath, a:home, strpart(l:here, 0, l:lastSegmentStart))
+	if (stridx(l:here, a:rootpath) == 0 && strlen(l:here) > strlen(a:rootpath))
+		call s:LoadDirectorySettings(a:fname, a:dname, a:rootpath, a:home, strpart(l:here, 0, l:lastSegmentStart))
 	endif
 
 	if (!l:isHomeDirectory)
