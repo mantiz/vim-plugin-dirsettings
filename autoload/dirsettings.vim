@@ -86,6 +86,6 @@ function s:ApplyLocalConfiguration(fname, dname, path)
 	endif
 	if (filereadable(l:fulltagname))
 		exec 'set tags +=' . l:fulltagname
-	endif 
+	endif
 endfunction
 
