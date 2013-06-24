@@ -54,11 +54,11 @@ function s:PrepareBuffer(event, fname, dname, rootpath)
 
 	let b:dirsettings_prepared = 1
 
-	call s:LoadDirectorySettings(function('s:ApplyLocalConfiguration'), a:fname, a:dname, a:rootpath, substitute($HOME, '/\+$', '', ''))
+	call s:LoadDirectorySettings(a:fname, a:dname, a:rootpath, substitute($HOME, '/\+$', '', ''))
 	execute 'doautocmd ' . a:event . ' <buffer>'
 endfunction
 
-function s:LoadDirectorySettings(callback, fname, dname, rootpath, home, ...)
+function s:LoadDirectorySettings(fname, dname, rootpath, home, ...)
 	let l:here = substitute(a:0 > 0 ? a:1 : expand('%:p:h'), '/\+$', '', '')
 
 	let l:lastSegmentStart = match(l:here, '/[^/]\+$')
@@ -69,7 +69,7 @@ function s:LoadDirectorySettings(callback, fname, dname, rootpath, home, ...)
 	endif
 
 	if (!l:isHomeDirectory)
-		call a:callback(a:fname, a:dname, l:here)
+		call s:ApplyLocalConfiguration(a:fname, a:dname, l:here)
 	endif
 endfunction
 
