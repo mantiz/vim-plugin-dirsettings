@@ -10,7 +10,7 @@ export HOME="${fakehome}"
 if [ $# -ge 1 ]; then
     env bash ${testdir}/runVimTests/bin/runVimTests.sh "$@"
 else
-    env bash ${testdir}/runVimTests/bin/runVimTests.sh "${testdir}/src"
+    env bash ${testdir}/runVimTests/bin/runVimTests.sh -0 --runtime ../.vimrc "${testdir}/src"
 fi
 
 if [ -z "${TESTDEBUG}" ]; then
