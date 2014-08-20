@@ -2,10 +2,6 @@
 VIM - Plugin - dirsettings
 ==========================
 
-:Author:  Christian Hammerl <info@christian-hammerl.de>
-:Version: 2.0
-:Updated: 2012-07-09
-
 Description
 ===========
 
