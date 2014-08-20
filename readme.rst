@@ -26,12 +26,12 @@ Additionally it checks for a ".vim/tags" file and appends it to the tag
 list. This is better than a "tags" file in the current working directory
 for source control reasons.
 
-The plugin uses three autocommands (``BufNewFile, BufReadPre, BufWinEnter``)
-with the autocommand group `dirsettings` (by default). It calls an internally
-used function to load directory specific settings, and sets a flag for the own
-autocommands so that they are not executed twice which would result in an
-endless recursion. After the flag was set, the current event is recalled which
-executes all other defined autocommands. This explains why the call to
+The plugin uses four autocommands (``BufNewFile, BufReadPre, BufWinEnter,
+BufEnter``) with the autocommand group `dirsettings` (by default). It calls an
+internally used function to load directory specific settings, and sets a flag
+for the own autocommands so that they are not executed twice which would result
+in an endless recursion. After the flag was set, the current event is recalled
+which executes all other defined autocommands. This explains why the call to
 ``dirsettings#Install()`` should be the very first command in your ``.vimrc``.
 Otherwise it could happen that previously defined autocommands are called
 twice.

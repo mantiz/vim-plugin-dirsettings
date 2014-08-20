@@ -37,13 +37,14 @@ function dirsettings#Install(...)
 	let l:fname = a:0 > 0 ? a:1 : '.vimrc'
 	let l:dname = a:0 > 1 ? a:2 : '.vim'
 	let l:augroup = a:0 > 2 ? a:3 : 'dirsettings'
-	let l:rootpath = a:0 > 3 ? a:4 : ''
+	let l:rootpath = a:0 > 3 ? a:4 : '/'
 
 	execute 'augroup ' . l:augroup
 		au!
 		execute 'au BufNewFile * : call s:PrepareBuffer(''BufNewFile'', ''' . l:fname . ''', ''' . l:dname . ''', ''' . l:rootpath . ''')'
 		execute 'au BufReadPre * : call s:PrepareBuffer(''BufReadPre'', ''' . l:fname . ''', ''' . l:dname . ''', ''' . l:rootpath . ''')'
 		execute 'au BufWinEnter * : call s:PrepareBuffer(''BufWinEnter'', ''' . l:fname . ''', ''' . l:dname . ''', ''' . l:rootpath . ''')'
+		execute 'au BufEnter * : call s:PrepareBuffer(''BufEnter'', ''' . l:fname . ''', ''' . l:dname . ''', ''' . l:rootpath . ''')'
 	augroup END
 endfunction
 
@@ -59,15 +60,26 @@ function s:PrepareBuffer(event, fname, dname, rootpath)
 endfunction
 
 function s:LoadDirectorySettings(fname, dname, rootpath, home, ...)
-	let l:here = substitute(a:0 > 0 ? a:1 : expand('%:p:h'), '/\+$', '', '')
+	let l:here = substitute(a:0 > 0 ? a:1 : expand('<afile>:p'), '/\+$', '', '')
 
-	let l:lastSegmentStart = match(l:here, '/[^/]\+$')
-	let l:isHomeDirectory = (stridx(l:here, a:home) == 0 && strlen(l:here) == strlen(a:home)) ? 1 : 0
-
-	if (stridx(l:here, a:rootpath) == 0 && strlen(l:here) > strlen(a:rootpath))
-		call s:LoadDirectorySettings(a:fname, a:dname, a:rootpath, a:home, strpart(l:here, 0, l:lastSegmentStart))
+	if (l:here == '')
+		if (a:0 == 0)
+			let l:here = expand('%:p')
+		else
+			let l:here = a:rootpath
+		endif
 	endif
 
+	if (!isdirectory(l:here))
+		let l:here = fnamemodify(l:here, ':p:h')
+	endif
+
+	let l:parentPath = fnamemodify(l:here, ':h')
+	if (stridx(l:here, a:rootpath) == 0 && strlen(l:here) > strlen(a:rootpath))
+		call s:LoadDirectorySettings(a:fname, a:dname, a:rootpath, a:home, l:parentPath)
+	endif
+
+	let l:isHomeDirectory = (stridx(l:here, a:home) == 0 && strlen(l:here) == strlen(a:home)) ? 1 : 0
 	if (!l:isHomeDirectory)
 		call s:ApplyLocalConfiguration(a:fname, a:dname, l:here)
 	endif
@@ -88,4 +100,3 @@ function s:ApplyLocalConfiguration(fname, dname, path)
 		exec 'set tags +=' . l:fulltagname
 	endif
 endfunction
-
