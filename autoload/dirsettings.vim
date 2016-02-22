@@ -91,12 +91,12 @@ function s:ApplyLocalConfiguration(fname, dname, path)
 	let l:fulltagname = a:path . '/' . a:dname . '/tags'
 
 	if (isdirectory(l:fulldname))
-		execute "set runtimepath+=" . l:fulldname
+		execute "set runtimepath+=" . fnameescape(l:fulldname)
 	endif
 	if (filereadable(l:fullfname))
-		exec 'source ' . l:fullfname
+		exec 'source ' . fnameescape(l:fullfname)
 	endif
 	if (filereadable(l:fulltagname))
-		exec 'set tags +=' . l:fulltagname
+		exec 'set tags +=' . fnameescape(l:fulltagname)
 	endif
 endfunction
