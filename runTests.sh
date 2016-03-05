@@ -1,5 +1,5 @@
 #!/bin/bash
-filepath="$(dirname "$(readlink -f "$0")")"
+filepath=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
 testdir="${filepath}/tests"
 
 fakehome="${testdir}/data"
