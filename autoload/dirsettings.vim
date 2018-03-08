@@ -86,6 +86,9 @@ function s:LoadDirectorySettings(fname, dname, rootpath, home, ...)
 endfunction
 
 function s:ApplyLocalConfiguration(fname, dname, path)
+	if (a:path == '/')
+		return
+	endif
 	let l:fullfname = a:path . '/' . a:fname
 	let l:fulldname = a:path . '/' . a:dname
 	let l:fulltagname = a:path . '/' . a:dname . '/tags'
