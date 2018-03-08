@@ -1,0 +1,11 @@
+image: alpine:latest
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+before_script:
+- apk add --no-cache bash vim
+
+test:
+  script:
+  - ./runTests.sh
